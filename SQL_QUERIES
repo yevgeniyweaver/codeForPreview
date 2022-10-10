@@ -1,0 +1,80 @@
+
+/*       SSPList / SSPSettings      */
+select 
+GROUP_CONCAT(`ExchangeSSPSetings`.`id`) as ep_id, 
+ExchangeSSPList.account_manager_id as manager,
+ExchangeSSPList.company_name as company_name,
+GROUP_CONCAT(DISTINCT`ExchangeSSPSetings`.region ORDER BY `ExchangeSSPSetings`.region ASC) as "region",
+SUM(`ExchangeSSPSetings`.active) as "active",
+ROUND(SUM(`ExchangeSSPSetings`.qps), 2) as "qps",
+ROUND(SUM(`ExchangeSSPSetings`.bidqps), 2) as "bid_qps",
+ROUND(SUM(`ExchangeSSPSetings`.yesterdayspend), 2) as "yesterdayspend",
+ROUND(SUM(`ExchangeSSPSetings`.dailyspend), 2) as "dailyspend"
+from `ExchangeSSPList` 
+left join `ExchangeSSPSetings` on `ExchangeSSPSetings`.`company_name` = `ExchangeSSPList`.`company_name` 
+where (`ExchangeSSPSetings`.`active` <> -1) 
+group by `ExchangeSSPList`.`company_name` 
+order by `ExchangeSSPList`.`company_name` desc
+
+
+
+/*       DSPList / DSPSettings      */
+USE magic;
+select 
+`ExchangeDSPList`.`company_name` as `company_name`, 
+MAX(`ExchangeDSPSettings`.`usebanner`) as "usebanner",
+MAX(`ExchangeDSPSettings`.usenative) as "usenative",
+MAX(`ExchangeDSPSettings`.usevideo) as "usevideo",
+MAX(`ExchangeDSPSettings`.useaudio) as "useaudio",
+MAX(`ExchangeDSPSettings`.usepop) as "usepop",
+MAX(`ExchangeDSPSettings`.adaptraffic) as "adaptraffic",
+GROUP_CONCAT(DISTINCT `ExchangeDSPSettings`.region ORDER BY `ExchangeDSPSettings`.region DESC) as "regions",
+MAX(`ExchangeDSPSettings`.allowVastRtb) as "allowVastRtb",
+SUM(`ExchangeDSPSettings`.qps) as "qps",
+ROUND(SUM(`ExchangeDSPSettings`.real_qps), 2) as "real_qps",
+ROUND(SUM(`ExchangeDSPSettings`.bid_qps), 2) as "bid_qps",
+ROUND(SUM(`ExchangeDSPSettings`.yesterdayspend), 2) as "yesterdayspend",
+ROUND(SUM(`ExchangeDSPSettings`.dailyspend), 2) as "dailyspend",
+MAX(`ExchangeDSPSettings`.spendlimit) as "maxSpendLimit"
+from `ExchangeDSPSettings` 
+left join `ExchangeDSPList` on `ExchangeDSPSettings`.`company_name` = `ExchangeDSPList`.`company_name` 
+where (`ExchangeDSPSettings`.`active` <> -1 AND `ExchangeDSPSettings`.`region` = 'SGP') 
+group by `ExchangeDSPList`.`company_name` 
+order by `ExchangeDSPList`.`company_name` asc
+
+
+
+
+USE magic;
+select 
+GROUP_CONCAT(`ExchangeDSPSettings`.`id`,`ExchangeDSPSettings`.`keyname`) as "endpoints",
+`ExchangeDSPList`.`company_name`
+from `ExchangeDSPSettings` 
+left join `ExchangeDSPList` on `ExchangeDSPSettings`.`company_name` = `ExchangeDSPList`.`company_name` 
+where (`ExchangeDSPSettings`.`active` <> -1) 
+GROUP BY `ExchangeDSPList`.`company_name`
+order by `ExchangeDSPList`.`company_name` 
+asc;
+
+
+
+
+USE magic;
+select 
+GROUP_CONCAT(DISTINCT(`ExchangeDSPSettings`.region)) as regions,
+ExchangeDSPList.company_name as company 
+from `ExchangeDSPSettings` 
+left join `ExchangeDSPList` on `ExchangeDSPSettings`.`company_name` = `ExchangeDSPList`.`company_name` 
+where (`ExchangeDSPSettings`.`active` <> -1) 
+group by `ExchangeDSPList`.`company_name` 
+order by `ExchangeDSPList`.`company_name` desc
+
+
+
+USE magic;
+select 
+ExchangeDSPList.company_name as company 
+from `ExchangeDSPSettings` left join `ExchangeDSPList` on `ExchangeDSPSettings`.`company_name` = `ExchangeDSPList`.`company_name` 
+
+
+
